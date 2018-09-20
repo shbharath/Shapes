@@ -57,7 +57,7 @@ def vectortoimg(v,show=True):
     if show:
         plt.show()
         
-def vectortoimg_3(v,show=True):
+def vectortoimg_3(v,show=False):
     import matplotlib as plt
     import cv2
     import os, struct
@@ -84,3 +84,24 @@ def resize_data(data):
         data_upscaled[i] = large_img
     return data_upscaled
 
+def labeled_cluster_accuracy(y_true, y_pred):
+    """
+    Calculate clustering accuracy. Require scikit-learn installed
+    # Arguments
+        y: true labels, numpy.array with shape `(n_samples,)`
+        y_pred: predicted labels, numpy.array with shape `(n_samples,)`
+    # Return
+        accuracy, in [0,1]
+    """
+    y_true = y_true.astype(np.int64)
+    assert y_pred.size == y_true.size
+    D = max(y_pred.max(), y_true.max()) + 1
+    #print(D)
+    w = np.zeros((D, D), dtype=np.int64)
+    for i in range(y_pred.size):
+        w[y_pred[i], y_true[i]] += 1
+    #print(w)
+    from sklearn.utils.linear_assignment_ import linear_assignment
+    ind = linear_assignment(w.max() - w)
+    #print([w[i, j] for i, j in ind])
+    return sum([w[i, j] for i, j in ind]) * 1.0 / y_pred.size
